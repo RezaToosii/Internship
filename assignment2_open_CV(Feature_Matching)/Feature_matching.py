@@ -1,4 +1,5 @@
 import cv2
+import os
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -19,9 +20,10 @@ matches = sorted(matches, key=lambda val: val.distance)
 out0 = cv2.drawMatches(img1, kp1, img2, kp2, matches[:20], None, flags=0)
 out2 = cv2.drawMatches(img1, kp1, img2, kp2, matches[:20], None, flags=2)
 
-
+os.makedirs('./Result', exist_ok=True)
+path = f'{os.getcwd()}\Result'
 plt.imshow(out0)
-plt.savefig('output1_matches.png')
+plt.savefig(f'{path}\output1_matches.png', dpi=300)
 
 plt.imshow(out2)
-plt.savefig('output2_matches.png')
+plt.savefig(f'{path}\output2_matches.png', dpi=300)
