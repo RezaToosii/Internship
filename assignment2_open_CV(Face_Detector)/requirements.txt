@@ -1,0 +1,4 @@
+cmake==3.30.0
+mkl-service==2.4.0
+numpy==2.0.0
+opencv-python==4.10.0.84
