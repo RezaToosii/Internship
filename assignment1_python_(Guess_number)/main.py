@@ -202,11 +202,11 @@ class Game(QWidget):
             self.show_turn = False
         for i in range(num_player):
             self.players.append(Player())
+
         final_number = self.secret_code_input.text()
-        while True:
-            if len(final_number) == 4:
-                break
-            final_number = input('WRONG!!!\nPlease write again your 4 character secret code (like 0025) : ')
+        if len(final_number) != 4:
+            QMessageBox.information(self, 'WRONG!!!', 'Please write again your 4 character secret code (like 0025).')
+            return 0
         self.final_number = list(final_number)
 
         self.turn_label.setText(f'Now it\'s the turn of player number {self.turn % len(self.players) + 1}')
