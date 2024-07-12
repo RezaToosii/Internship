@@ -1,20 +1,44 @@
+"""
+This file is about my first assignment for an internship where I have to implement a simple game.
+Author: Reza Toosi
+"""
+
 import sys
+import random
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QTextEdit, QMessageBox
 from PyQt5.QtGui import QIcon
 
 
 class Player:
     def __init__(self):
+        """
+            Initialize a Player instance with empty guess history.
+        """
         self.guesses = []
         self.numbers = []
         self.locations = []
 
     def add_history(self, guess, number, location):
+        """
+            Add player's guess and the result to the history.
+
+            Parameters
+            ----------
+            guess : list
+                The guessed numbers.
+            number : int
+                Number of correct numbers in the guess.
+            location : int
+                Number of correct numbers in the correct place.
+        """
         self.guesses.append(guess)
         self.numbers.append(number)
         self.locations.append(location)
 
     def history_display(self):
+        """
+            Display the history of player guesses.
+        """
         if len(self.guesses) == 0:
             return 'No guesses'
         history = ""
@@ -23,6 +47,21 @@ class Player:
         return history
 
     def guess(self, guess_num, final_num):
+        """
+            Compares the player's guess with the secret code and prints the result.
+
+            Parameters
+            ----------
+            guess_num : list
+                Player's guessed numbers.
+            final_num : list
+                The secret code numbers.
+
+            Returns
+            -------
+            int
+                0 if the hidden number is not found, 1 if the hidden number is found.
+        """
         location = 0
         number = 0
         guess_num = list(guess_num)
@@ -47,7 +86,7 @@ class Player:
         additional_message = ""
 
         if location == 4:
-            return 1
+            return 1, result_message, ""
         elif location == 3:
             additional_message = "Soo close!!! Hope you find it in the next round."
         elif number == 4:
@@ -62,13 +101,20 @@ class Player:
 
 class Game(QWidget):
     def __init__(self):
+        """
+            Initialize the Game instance with an empty list of players and final number.
+        """
         super().__init__()
         self.players = []
         self.final_number = []
         self.turn = 0
         self.initUI()
+        self.show_turn = True
 
     def initUI(self):
+        """
+            Initialize the UI components and layout.
+        """
         self.setWindowTitle('Number Guessing Game')
 
         self.setStyleSheet("""
@@ -148,7 +194,12 @@ class Game(QWidget):
         self.show()
 
     def start_game(self):
+        """
+            Start the game by initializing players and the secret code.
+        """
         num_player = int(self.num_players_input.text())
+        if num_player == 1:
+            self.show_turn = False
         for i in range(num_player):
             self.players.append(Player())
         final_number = self.secret_code_input.text()
@@ -161,7 +212,8 @@ class Game(QWidget):
         self.turn_label.setText(f'Now it\'s the turn of player number {self.turn % len(self.players) + 1}')
         self.update_history_display()
 
-        self.show_turn_message()
+        if self.show_turn:
+            self.show_turn_message()
 
     def update_history_display(self):
         turn_player = self.players[self.turn % len(self.players)]
@@ -177,21 +229,22 @@ class Game(QWidget):
         result, result_message, additional_message = turn_player.guess(guess_number, self.final_number)
 
         if result == 1:
-            QMessageBox.information(self, 'Game Over',
-                                    f'Player number {self.turn % len(self.players) + 1} wins.\nThanks for playing.')
+            additional_message = f'Player number {self.turn % len(self.players) + 1} won.\nThanks for playing.'
+            QMessageBox.information(self, 'Game Over', f'{result_message}\n{additional_message}')
             self.close()
         else:
             QMessageBox.information(self, 'Result', f'{result_message}\n{additional_message}')
 
             self.turn += 1
-            if self.turn >= len(self.players) * 10:
+            if self.turn >= len(self.players) * 20:
                 QMessageBox.information(self, 'Game Over',
                                         f'No one guessed the correct number\nThe correct number was {"".join(self.final_number)}\nThank you for your time')
                 self.close()
             else:
                 self.turn_label.setText(f'Now it\'s the turn of player number {self.turn % len(self.players) + 1}')
                 self.update_history_display()
-                self.show_turn_message()
+                if self.show_turn:
+                    self.show_turn_message()
 
 
 if __name__ == '__main__':
